@@ -492,7 +492,7 @@ main() {
         local name path description visibility http_url project_id github_repo_name
         name=$(echo "$projects" | jq -r ".[$i].path")
         path=$(echo "$projects" | jq -r ".[$i].path_with_namespace")
-        description=$(echo "$projects" | jq -r ".[$i].description // \"Migrated from GitLab: ${path}\"")
+        description=$(echo "$projects" | jq -r ".[$i].description // \"Migrated from GitLab: ${path}\"" | tr -d '\000-\037')
         visibility=$(echo "$projects" | jq -r ".[$i].visibility")
         http_url=$(echo "$projects" | jq -r ".[$i].http_url_to_repo")
         project_id=$(echo "$projects" | jq -r ".[$i].id")
