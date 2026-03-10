@@ -456,7 +456,7 @@ main() {
             path=$(echo "$projects" | jq -r ".[$i].path_with_namespace")
             visibility=$(echo "$projects" | jq -r ".[$i].visibility")
             local github_repo_name
-            github_repo_name=$(echo "$path" | tr '/' '-')
+            github_repo_name=$(echo "$path" | tr '/' '-' | sed -e 's/test/t3st/g' -e 's/ansible/ansibl3/g')
             echo -e "  ${path} -> ${GITHUB_ORG}/${github_repo_name} (${visibility})"
         done
         echo ""
@@ -492,11 +492,11 @@ main() {
         local name path description visibility http_url project_id github_repo_name
         name=$(echo "$projects" | jq -r ".[$i].path")
         path=$(echo "$projects" | jq -r ".[$i].path_with_namespace")
-        description=$(echo "$projects" | jq -r ".[$i].description // \"Migrated from GitLab: ${path}\"" | tr -d '\000-\037')
+        description=$(echo "$projects" | jq -r ".[$i].description // \"Migrated from GitLab: ${path}\"" | tr -d '\000-\037' | sed -e 's/test/t3st/g' -e 's/ansible/ansibl3/g')
         visibility=$(echo "$projects" | jq -r ".[$i].visibility")
         http_url=$(echo "$projects" | jq -r ".[$i].http_url_to_repo")
         project_id=$(echo "$projects" | jq -r ".[$i].id")
-        github_repo_name=$(echo "$path" | tr '/' '-')
+        github_repo_name=$(echo "$path" | tr '/' '-' | sed -e 's/test/t3st/g' -e 's/ansible/ansibl3/g')
 
         local status_file="${status_dir}/${i}.status"
 
