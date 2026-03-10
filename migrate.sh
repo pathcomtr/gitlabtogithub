@@ -310,7 +310,7 @@ create_github_repo() {
         "https://api.github.com/orgs/${GITHUB_ORG}/repos" \
         -d "{
             \"name\": \"${repo_name}\",
-            \"description\": $(echo "$description" | jq -Rs .),
+            \"description\": $(echo "$description" | jq -Rs 'gsub("[\\u0000-\\u001f\\u007f]"; "")'),
             \"private\": ${private_flag},
             \"has_issues\": true,
             \"has_projects\": false,
