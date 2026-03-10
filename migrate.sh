@@ -325,7 +325,7 @@ create_github_repo() {
         return 0
     else
         error "Failed to create repo '${repo_name}': HTTP ${http_status}"
-        (echo "$body" | jq -r '.message // .errors // .' 2>/dev/null || echo "$body") >&2
+        (echo "$body" | jq -r '(.message // "") + " " + ((.errors // []) | map(.message // (.code + " on " + .field)) | join("; "))' 2>/dev/null || echo "$body") >&2
         return 1
     fi
 }
