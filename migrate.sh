@@ -404,10 +404,12 @@ migrate_single_repo() {
     # Write "in progress" marker
     echo "running:${path}" > "$status_file"
 
-    if create_github_repo "$github_repo_name" "$description" "$visibility" 2>/dev/null; then
-        if mirror_repo "$http_url" "$github_repo_name" 2>/dev/null; then
+    local log_file="${status_file%.status}.log"
+
+    if create_github_repo "$github_repo_name" "$description" "$visibility" 2>>"$log_file"; then
+        if mirror_repo "$http_url" "$github_repo_name" 2>>"$log_file"; then
             if [[ "$DELETE_SOURCE" == true ]]; then
-                if delete_gitlab_project "$project_id" "$path" 2>/dev/null; then
+                if delete_gitlab_project "$project_id" "$path" 2>>"$log_file"; then
                     echo "ok_deleted" > "$status_file"
                 else
                     echo "ok" > "$status_file"
@@ -594,7 +596,15 @@ main() {
                     ;;
                 fail:*)
                     failed=$((failed + 1))
+                    local log_file="${status_file%.status}.log"
+                    local log_content=""
+                    if [[ -f "$log_file" ]]; then
+                        log_content=$(cat "$log_file")
+                    fi
                     failed_repos="${failed_repos}\n  - ${result#fail:}"
+                    if [[ -n "$log_content" ]]; then
+                        failed_repos="${failed_repos}\n$(echo "$log_content" | sed 's/^/      /')"
+                    fi
                     ;;
             esac
         else
