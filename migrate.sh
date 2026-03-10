@@ -308,14 +308,11 @@ create_github_repo() {
         -H "Authorization: token ${GITHUB_TOKEN}" \
         -H "Accept: application/vnd.github.v3+json" \
         "https://api.github.com/orgs/${GITHUB_ORG}/repos" \
-        -d "{
-            \"name\": \"${repo_name}\",
-            \"description\": $(echo "$description" | jq -Rs 'gsub("[\\u0000-\\u001f\\u007f]"; "")'),
-            \"private\": ${private_flag},
-            \"has_issues\": true,
-            \"has_projects\": false,
-            \"has_wiki\": false
-        }")
+        -d "$(jq -n \
+            --arg name "$repo_name" \
+            --arg desc "$description" \
+            --argjson private "$private_flag" \
+            '{name: $name, description: ($desc | gsub("[\\u0000-\\u001f\\u007f]"; "")), private: $private, has_issues: true, has_projects: false, has_wiki: false}')")
 
     local body http_status
     body=$(echo "$result" | sed '$d')
